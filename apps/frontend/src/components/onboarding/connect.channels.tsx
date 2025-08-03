@@ -117,14 +117,20 @@ export const ConnectChannels: FC = () => {
       ) =>
       async () => {
         const gotoIntegration = async (externalUrl?: string) => {
+          const endpoint =
+            identifier === 'x'
+              ? `/integrations/social/${identifier}/connect`
+              : `/integrations/social/${identifier}${
+                  externalUrl ? `?externalUrl=${externalUrl}` : ``
+                }`;
+          const options =
+            identifier === 'x'
+              ? { method: 'POST' as const }
+              : undefined;
           const { url, err } = await (
-            await fetch(
-              `/integrations/social/${identifier}${
-                externalUrl ? `?externalUrl=${externalUrl}` : ``
-              }`
-            )
+            await fetch(endpoint, options)
           ).json();
-          if (err) {
+          if (err || !url) {
             toaster.show('Could not connect to the platform', 'warning');
             return;
           }
